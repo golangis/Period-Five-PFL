@@ -91,3 +91,6 @@ player_five_colors(Board, Player) :-
     player_piece_in_yellow(Board, Player),
     player_piece_in_purple(Board, Player),
     player_piece_in_blue(Board, Player).
+
+valid_moves(Board, Player, ListOfMoves) :-
+    .
