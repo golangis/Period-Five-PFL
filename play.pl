@@ -26,44 +26,68 @@ player_five_columns(Board, Player) :-
     count_in_column(Board, 4, Player, 1),
     count_in_column(Board, 5, Player, 1).
 
-% /*
-% * player_piece_in_black(+Board, + Player)
-% * Function that checks if one of the player pieces (or the cube) is in at least all the a black square of the board.
-% */    
-% player_piece_in_black(Board, Player) :-
+/*
+* player_piece_in_black(+Board, + Player)
+* Function that checks if one of the player pieces (or the cube) is in at least all the a black square of the board.
+*/    
+player_piece_in_black(Board, Player) :- 
+    nth1(1, Board, Row1), nth1(1, Row1, Player) ;
+    nth1(2, Board, Row2), nth1(2, Row2, Player) ;  
+    nth1(3, Board, Row3), nth1(3, Row3, Player) ; 
+    nth1(4, Board, Row4), nth1(4, Row4, Player) ;  
+    nth1(5, Board, Row5), nth1(5, Row5, Player). 
 
-% /*
-% * player_piece_in_red(+Board, + Player)
-% * Function that checks if one of the player pieces (or the cube) is in at least all the a red square of the board.
-% */
-% player_piece_in_red(Board, Player) :-
-
-% /*
-% * player_piece_in_yellow(+Board, + Player)
-% * Function that checks if one of the player pieces (or the cube) is in at least all the a yellow square of the board.
-% */
-% player_piece_in_yellow(Board, Player) :-
-
-% /*
-% * player_piece_in_purple(+Board, + Player)
-% * Function that checks if one of the player pieces (or the cube) is in at least all the a purple square of the board.
-% */
-% player_piece_in_purple(Board, Player) :-
-
-% /*
-% * player_piece_in_blue(+Board, + Player)
-% * Function that checks if one of the player pieces (or the cube) is in at least all the a blue square of the board.
-% */
-% player_piece_in_blue(Board, Player) :-
+/*
+* player_piece_in_red(+Board, + Player)
+* Function that checks if one of the player pieces (or the cube) is in at least all the a red square of the board.
+*/
+player_piece_in_red(Board, Player) :-
+    nth1(1, Board, Row1), nth1(2, Row1, Player) ;
+    nth1(2, Board, Row2), nth1(3, Row2, Player) ;  
+    nth1(3, Board, Row3), nth1(4, Row3, Player) ; 
+    nth1(4, Board, Row4), nth1(5, Row4, Player) ;  
+    nth1(5, Board, Row5), nth1(1, Row5, Player). 
 
 
-% /*
-% * player_five_colors(+Board, + Player)
-% * Function that checks if the player pieces (plus the cube) are on all the 5 colors of the board.
-% */
-% player_five_colors(Board, Player) :-
-%     player_piece_in_black(Board, Player),
-%     player_piece_in_red(Board, Player),
-%     player_piece_in_yellow(Board, Player),
-%     player_piece_in_purple(Board, Player),
-%     player_piece_in_blue(Board, Player).
+/*
+* player_piece_in_yellow(+Board, + Player)
+* Function that checks if one of the player pieces (or the cube) is in at least all the a yellow square of the board.
+*/
+player_piece_in_yellow(Board, Player) :-
+    nth1(1, Board, Row1), nth1(3, Row1, Player) ;
+    nth1(2, Board, Row2), nth1(4, Row2, Player) ;  
+    nth1(3, Board, Row3), nth1(5, Row3, Player) ; 
+    nth1(4, Board, Row4), nth1(1, Row4, Player) ;  
+    nth1(5, Board, Row5), nth1(2, Row5, Player). 
+/*
+* player_piece_in_purple(+Board, + Player)
+* Function that checks if one of the player pieces (or the cube) is in at least all the a purple square of the board.
+*/
+player_piece_in_purple(Board, Player) :-
+    nth1(1, Board, Row1), nth1(4, Row1, Player) ;
+    nth1(2, Board, Row2), nth1(5, Row2, Player) ;  
+    nth1(3, Board, Row3), nth1(1, Row3, Player) ; 
+    nth1(4, Board, Row4), nth1(2, Row4, Player) ;  
+    nth1(5, Board, Row5), nth1(3, Row5, Player). 
+/*
+* player_piece_in_blue(+Board, + Player)
+* Function that checks if one of the player pieces (or the cube) is in at least all the a blue square of the board.
+*/
+player_piece_in_blue(Board, Player) :-
+    nth1(1, Board, Row1), nth1(5, Row1, Player) ;
+    nth1(2, Board, Row2), nth1(1, Row2, Player) ;  
+    nth1(3, Board, Row3), nth1(2, Row3, Player) ; 
+    nth1(4, Board, Row4), nth1(3, Row4, Player) ;  
+    nth1(5, Board, Row5), nth1(4, Row5, Player). 
+
+
+/*
+* player_five_colors(+Board, + Player)
+* Function that checks if the player pieces (plus the cube) are on all the 5 colors of the board.
+*/
+player_five_colors(Board, Player) :-
+    player_piece_in_black(Board, Player),
+    player_piece_in_red(Board, Player),
+    player_piece_in_yellow(Board, Player),
+    player_piece_in_purple(Board, Player),
+    player_piece_in_blue(Board, Player).
