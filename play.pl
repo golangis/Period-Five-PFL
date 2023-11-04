@@ -7,7 +7,6 @@
 player_won(Board, Player) :-
     player_five_columns(Board, Player),
     player_five_colors(Board, Player).
-
 /*
 * count_in_column(+Array, +ColumnIndex, +Value, -Count) 
 * Counts the number of times a given Value appears on a specified ColumnIndex on a given Array.
@@ -48,7 +47,6 @@ player_piece_in_red(Board, Player) :-
     nth1(4, Board, Row4), nth1(5, Row4, Player) ;  
     nth1(5, Board, Row5), nth1(1, Row5, Player). 
 
-
 /*
 * player_piece_in_yellow(+Board, + Player)
 * Function that checks if one of the player pieces (or the cube) is in at least all the a yellow square of the board.
@@ -59,6 +57,7 @@ player_piece_in_yellow(Board, Player) :-
     nth1(3, Board, Row3), nth1(5, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(1, Row4, Player) ;  
     nth1(5, Board, Row5), nth1(2, Row5, Player). 
+
 /*
 * player_piece_in_purple(+Board, + Player)
 * Function that checks if one of the player pieces (or the cube) is in at least all the a purple square of the board.
@@ -69,6 +68,7 @@ player_piece_in_purple(Board, Player) :-
     nth1(3, Board, Row3), nth1(1, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(2, Row4, Player) ;  
     nth1(5, Board, Row5), nth1(3, Row5, Player). 
+
 /*
 * player_piece_in_blue(+Board, + Player)
 * Function that checks if one of the player pieces (or the cube) is in at least all the a blue square of the board.
@@ -79,7 +79,7 @@ player_piece_in_blue(Board, Player) :-
     nth1(3, Board, Row3), nth1(2, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(3, Row4, Player) ;  
     nth1(5, Board, Row5), nth1(4, Row5, Player). 
-
+    
 
 /*
 * player_five_colors(+Board, + Player)
