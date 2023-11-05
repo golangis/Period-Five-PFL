@@ -1,4 +1,6 @@
 :- use_module(library(lists)).
+:- consult('utils.pl').
+:- consult('board.pl').
 
 /*
 * player_won(+Board, +Player) 
@@ -123,11 +125,6 @@ rival_next_to_win(Board, Player) :-
     count_true_conditions(CountColumns, ConditionsColumns),
     CountColumns = 4.
 
-
-
-
-
-
 /*
 *
 * 
@@ -137,3 +134,30 @@ cube_cant_move(Board, Player) :-
     %last_position()  .<- checar se posiçao igual à posiçao em que esteve na jogada anterior
 
 %valid_moves(Board, Player, ListOfMoves) :-.
+
+game_over(Board) :- 
+    (player_won(Board, light), congratulate(light)); 
+    (player_won(Board, dark), congratulate(dark)).
+
+congratulate(dark) :-
+    nl, nl, write('Game over!'), nl, write('Dark won! Good luck next time, Light!'), nl,
+    write('Type "e" to exit the intructions menu.'), nl,
+    wait_for_e_to_exit.
+
+congratulate(light) :-
+    nl, nl, write('Game over!'), nl, write('Light won! Good luck next time, Dark!'), nl,
+    write('Type "e" to exit the intructions menu.'), nl,
+    wait_for_e_to_exit.
+
+
+game_cycle(Board, Player) :-
+    game_over(Board), !.
+
+game_cycle(Board, Player) :-
+    %choose_move(Board, Player, Move),
+    %move(Board, Move, NewBoard),
+    next_player(Player, NextPlayer),
+    write(NextPlayer),
+    show_board(NewBoard),
+    game_cycle(NewBoard, NextPlayer).
+
