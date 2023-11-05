@@ -74,6 +74,23 @@ https://www.iggamecenter.com/en/rules/period5
 ```
 <img src="assets/estado-final.png" alt="final" width="200"/>
 
+#### Visualização do estado do jogo
+Após o começo do jogo, ao correr o predicado ``play.`` é apresentado o menu abaixo ao jogador.
+
+<img src="assets/menu.png" alt="final" width="200"/>
+
+O que o jogador tem de fazer para escolher uma opção é escrever o número relativo à mesma seguido de um ponto final e premir Enter. 
+As opções, tal como é mostrado na imagem, são as seguintes:
+
+- 1 - Player vs Player (modo de jogo player vs player)
+- 2 - Player vs Computer (modo de jogo player vs computador)
+- 3 - Computer vs Computer (modo de jogo computador vs computador)
+- 4 - Instruções (exibe as instruções do jogo)
+- 0 - Sair (sai do jogo, fechando o programa)
+
+
+
+
 
 #### 🔚 **Fim do Jogo**:
  A estratégia utilizada para verificar se o jogo chegou ao fim está implementada através do predicado ``game_over`` que verifica se algum jogador já colocou as 4 peças próprias e o cubo em simultanemante 5 colunas e 5 cores no tabuleiro, caso tal aconteça o jogo acaba e a esse jogador sai vencedor da partida.
