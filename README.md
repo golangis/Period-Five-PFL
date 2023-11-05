@@ -1,15 +1,15 @@
 # Programação Funcional e Lógica - TP1 T04 Period 5_2  
 
-## Participantes do Grupo
+## 👥 Participantes do Grupo
 up20190xxxx - Bruno Rafael Oliveira Machado  (TBD%)
 up202004656 - Mariana Solange Monteiro Rocha (TBD%)
 
-## Instalação e Execução
+## 💽 Instalação e Execução
 TBD include all the necessary steps for the correct execution of the game in both
 Linux and Windows environments (in addition to the installation of SICStus Prolog 4.8).
 
 
-## Descrição do Jogo
+## 📜 Descrição do Jogo
 Period 5 é um jogo de tabuleiro para 2 jogadores. Cada jogador tem 4 peças, para além disso há um cubo que é uma peça que ambos os jogadores podem mover.
 
 ### Tabuleiro
@@ -33,9 +33,53 @@ https://www.iggamecenter.com/en/rules/period5
 ## Lógica do Jogo
 
 ### Representação Interna do Estado de Jogo
-- **Tabuleiro**: lista de listas (cada elemento da sublista contém o que está dentro do quadrado a que corresponde);
-- **Fim do Jogo**: 
+#### 🧩 **Tabuleiro**
+ O tabuleiro é representado por uma lista de listas em que cada lista representa uma linha no tabuleiro e cada posição da lista representa um quadrado do tabuleiro. O tabuleiro tem tamanho fixo (5x5).
 
+#### 👤 **Jogador**
+ Um jogador é representado pelos símbolos `●` (dark)ou `□` (light). O cubo é representado por `■`. O primeiro jogador é o jogador claro.
+
+#### Estado Inicial 
+```([
+    [empty, dark, empty, empty, empty],
+    [light, empty, dark, empty, empty],
+    [empty, light, cube, dark,  empty],
+    [empty, empty, light, empty, dark],
+    [empty, empty, empty, light, empty] 
+], light)
+```
+
+![inicial](assets/estado-inicial.png)
+
+#### Estado Intermédio
+```([
+    [empty, dark, empty, empty, empty],
+    [light, dark, dark, empty, empty],
+    [empty, light, empty, cube,  empty],
+    [empty, empty, light, empty, dark],
+    [empty, empty, empty, light, empty]
+], light)
+```
+
+![intermedio](assets/estado-intermedio.png)
+
+#### Estado Final
+```([
+    [empty, dark, empty, empty, empty],
+    [light, dark, dark, empty, empty],
+    [empty, light, empty, empty,  cube],
+    [empty, empty, light, empty, dark],
+    [empty, empty, empty, light, empty] 
+], dark) 
+```
+
+![final](assets/estado-final.png)
+
+
+#### 🔚 **Fim do Jogo**:
+ A estratégia utilizada para verificar se o jogo chegou ao fim está implementada através do predicado game_over que verifica se algum jogador já colocou as 4 peças próprias e o cubo em simultanemante 5 colunas e 5 cores no tabuleiro, caso tal aconteça o jogo acaba e a esse jogador sai vencedor da partida.
+
+#### 
 
 ## Conclusões
 Conclusions about the work carried out, including limitations of the program (known
