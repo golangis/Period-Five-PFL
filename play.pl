@@ -135,9 +135,9 @@ cube_cant_move(Board, Player) :-
 
 %valid_moves(Board, Player, ListOfMoves) :-.
 
-game_over(Board) :- 
-    (player_won(Board, light), congratulate(light)); 
-    (player_won(Board, dark), congratulate(dark)).
+game_over(Board, Winner) :- 
+    (player_won(Board, light), congratulate(light)), Winner is light; 
+    (player_won(Board, dark), congratulate(dark)), Winner is dark.
 
 congratulate(dark) :-
     nl, nl, write('Game over!'), nl, write('Dark won! Good luck next time, Light!'), nl,
@@ -151,7 +151,7 @@ congratulate(light) :-
 
 
 game_cycle(Board, Player) :-
-    game_over(Board), !.
+    game_over(Board, Winner), !.
 
 game_cycle(Board, Player) :-
     %choose_move(Board, Player, Move),
