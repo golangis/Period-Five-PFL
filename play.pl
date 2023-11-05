@@ -92,5 +92,48 @@ player_five_colors(Board, Player) :-
     player_piece_in_purple(Board, Player),
     player_piece_in_blue(Board, Player).
 
-valid_moves(Board, Player, ListOfMoves) :-
-    .
+
+count_true_conditions(0, []).
+count_true_conditions(Count, [Condition | Rest]) :-
+    Condition,
+    count_true_conditions(SubCount, Rest),
+    Count is SubCount + 1.
+count_true_conditions(Count, [Condition | Rest]) :-
+    count_true_conditions(Count, Rest).
+
+
+
+rival_next_to_win(Board, Player) :-
+    ConditionsColors = [
+        player_piece_in_black(Board, Player),
+        player_piece_in_red(Board, Player),
+        player_piece_in_yellow(Board, Player),
+        player_piece_in_purple(Board, Player),
+        player_piece_in_blue(Board, Player)
+    ],
+    count_true_conditions(CountColors, ConditionsColors),
+    CountColors = 4,
+    ConditionsColumns = [
+        count_in_column(Board, 1, Player, 1),
+        count_in_column(Board, 2, Player, 1),
+        count_in_column(Board, 3, Player, 1),
+        count_in_column(Board, 4, Player, 1),
+        count_in_column(Board, 5, Player, 1)
+    ],
+    count_true_conditions(CountColumns, ConditionsColumns),
+    CountColumns = 4.
+
+
+
+
+
+
+/*
+*
+* 
+*/
+cube_cant_move(Board, Player) :- 
+    rival_next_to_win(Board, Player).
+    %last_position()  .<- checar se posiçao igual à posiçao em que esteve na jogada anterior
+
+%valid_moves(Board, Player, ListOfMoves) :-.
