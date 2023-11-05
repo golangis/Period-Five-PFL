@@ -155,155 +155,88 @@ game_cycle(Board, Player) :-
 
 game_cycle(Board, Player) :-
     %choose_move(Board, Player, Move),
-    move_piece(Board, Player, NewBoard),
-    next_player(Player, NextPlayer),
+    take_turn(Board, Player, NewBoard, NextPlayer),
     write(NextPlayer),
     display_game(NewBoard),
     game_cycle(NewBoard, NextPlayer).
 
-% Update your move_piece predicate to handle player turns and implement the conversion
-move_piece(Board, Player, NewBoard) :-
-    write('Enter the start Column (1-5): '),
-    read(StartX),
-    % input_to_index(StartXChar, StartX),
-    write('Enter the start Row (1-5): '),
-    read(StartY),
-    write('Enter the end Column (1-5): '),
-    read(EndX),
-    % input_to_index(EndXChar, EndX),
-    write('Enter the end Row (1-5): '),
-    read(EndY),
 
-    % Validate the move with the player in mind
-    ( validate_move(Board, Player, StartX, StartY, EndX, EndY) ->
-        % If the move is valid, perform it
-        perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard),
-        % Output the updated board
-        show_board(UpdatedBoard),
-        % Return the new state of the board
-        NewBoard = UpdatedBoard
-    ;
-        % If the move is invalid, notify the user and ask again
-        write('Invalid move, try again.'), nl,
-        move_piece(Board, Player, NewBoard)
-    ).
-
-% Validate the move
-validate_move(Board, Player, StartX, StartY, EndX, EndY) :-
-    % Make sure the move is within the bounds of the board.
-    within_bounds(StartX, StartY),
-    within_bounds(EndX, EndY),
-    % Make sure the start and end positions are different.
-    (StartX, StartY) \= (EndX, EndY),
-    % Ensure that there is a piece at the start position.
-    piece_at(Board, StartX, StartY, Piece),
-    Piece \= empty,
-    % Ensure that the end position is empty or the moving piece is the cube.
-    (Piece \= cube -> piece_at(Board, EndX, EndY, empty); true),
-    % Ensure the piece belongs to the player or it is the cube.
-    (Piece == cube; owns_piece(Player, Piece)),
-    % Make sure the path between the start and end positions is clear.
-    path_clear(Board, StartX, StartY, EndX, EndY),
-    % Cube-specific rules
-    (Piece \= cube ; (
-        % The cube cannot be returned to the same position.
-        \+cube_just_moved(EndX, EndY),
-        % The cube cannot be moved if the other player threatens to win on the next move.
-        \+threatens_to_win(Board, Player)
-    )).
-
-% Stub for cube_just_moved - Implement the logic based on your previous move tracking
-cube_just_moved(EndX, EndY) :-
-    % You need logic to remember where the cube was moved last, possibly by having a dynamic predicate
-    % that gets updated with the cube's last position after every move.
-    % For simplicity, assume there's a predicate cube_last_position(LastX, LastY) that stores this.
-    cube_last_position(LastX, LastY),
-    LastX == EndX, LastY == EndY.
-
-% Stub for threatens_to_win - Implement the logic to check if a move threatens to win
-threatens_to_win(Board, Player) :-
-    % Define the conditions that would mean a player threatens to win.
-    % This is a complex condition that depends on your game logic.
-    % It should check if by moving the cube, the opponent can win on their next move.
-    % For now, we will assume this check is done elsewhere and always fail it here.
-    false.
-
-% Stub for path_clear - check if the path is clear (no jumping over pieces)
-path_clear(Board, StartX, StartY, EndX, EndY) :-
-    % You need to ensure there's no piece in the way in the path from start to end.
-    % This will depend on whether the move is vertical or horizontal.
-    % Implement the check based on your game's movement rules.
-    % For now, this is a placeholder that always succeeds.
-    true.
-
-% Stub for owns_piece - checks if the player owns the piece
-owns_piece(Player, Piece) :-
-    % This should check if the piece at the start belongs to the player making the move.
-    % Implement this according to your game's logic of which player owns which pieces.
-    % For now, assume a simple check based on your description.
-    (Player == light -> Piece == light; Piece == dark).
-
-% Check if a position is within the bounds of the board.
-within_bounds(X, Y) :-
-    X >= 1, X =< 5, % Assuming A-E are represented as 'A' to 'E'
-    Y >= 1, Y =< 5.
-
-% Replace this with the actual logic to find a piece at a given position
-piece_at(Board, X, Y, Piece) :-
-    % You need to convert X from 'A' to 'E' to 1-5 if it's not already in numeric form.
-    % Then access the Board using the indices to get the Piece.
-    % For now, we'll assume it always succeeds.
-    true.
 
 
 %         ------------- PERFORM MOVE -------------     %
 
-% Perform the actual move on the board
-perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard) :-
-    % Translate X/Y coordinates to 0-indexed list indices
-    IndexXStart is StartX - 1,
-    IndexYStart is StartY - 1,
-    IndexXEnd is EndX - 1,
-    IndexYEnd is EndY - 1,
 
-    write('IndexXStart: '), write(IndexXStart), nl,
-    write('IndexYStart: '), write(IndexYStart), nl,
-    write('IndexXEnd: '), write(IndexXEnd), nl,
-    write('IndexYEnd: '), write(IndexYEnd), nl,
-    % Retrieve the piece at the starting position.
-    matrix_element(Board, IndexYStart, IndexXStart, Piece),
-    % Set the starting position to empty and place the piece at the ending position.
-    set_matrix_element(Board, IndexYStart, IndexXStart, empty, TempBoard),
-    set_matrix_element(TempBoard, IndexYEnd, IndexXEnd, Piece, UpdatedBoard).
+replace([_|T], 0, X, [X|T]).
+replace([H|T], I, X, [H|R]) :-
+    I > 0,
+    I1 is I - 1,
+    replace(T, I1, X, R).
 
-% Set an element in a matrix at the given Row and Col index.
-set_matrix_element([Row|RestRows], 0, Col, Elem, [NewRow|RestRows]) :-
-    % We are at the correct row, now we replace the column element.
-    replace_nth(Row, Col, Elem, NewRow).
+% To update the value at a specific (X,Y) position in a 2D list
+update_board(Board, X, Y, NewValue, UpdatedBoard) :-
+    nth0(Y, Board, Row),                 % Extract the specified row
+    replace(Row, X, NewValue, NewRow),   % Use replace to set the NewValue
+    replace(Board, Y, NewRow, UpdatedBoard).
 
-set_matrix_element([Row|RestRows], RowIndex, Col, Elem, [Row|NewRestRows]) :-
-    % We are not yet at the correct row, continue to the next.
-    RowIndex > 0,
-    NewRowIndex is RowIndex - 1,
-    set_matrix_element(RestRows, NewRowIndex, Col, Elem, NewRestRows).
+% To move a piece from (StartX,StartY) to (EndX,EndY)
+perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer) :-
+    nth0(StartY, Board, StartRow),                 % Get the start row
+    nth0(StartX, StartRow, Piece),                 % Get the piece to move
+    Piece \= empty,                                % Make sure the start is not empty
+    (Piece = Player; Piece = cube),                % Make sure the piece belongs to the current player or is a cube
+    nth0(EndY, Board, EndRow),                     % Get the end row
+    nth0(EndX, EndRow, Destination),               % Check the destination cell
+    Destination = empty,                           % Make sure the destination is empty
+    (StartX == EndX; StartY == EndY), 
+    path_clear(Board, StartX, StartY, EndX, EndY), % Check the path is clear
+    update_board(Board, StartX, StartY, empty, TempBoard),  % Remove the piece
+    update_board(TempBoard, EndX, EndY, Piece, UpdatedBoard),  % Place the piece
+    next_player(Player, NextPlayer).               % Get the next player
 
-% Replace the nth element in a list with a new element.
-replace_nth([_|T], 0, Elem, [Elem|T]).
-replace_nth([H|T], I, Elem, [H|R]) :-
-    I > 0, % Ensure index is positive
-    NI is I-1, % Decrease index by 1
-    replace_nth(T, NI, Elem, R).
+ask_coordinates(StartX, StartY, EndX, EndY) :-
+    write('Enter the Column of the piece to move: '), read(StartX),
+    write('Enter the Row coordinate of the piece to move: '), read(StartY),
+    write('Enter the Column coordinate of where to move the piece: '), read(EndX),
+    write('Enter the Row coordinate of where to move the piece: '), read(EndY).
 
-% Get an element from the matrix at the given Row and Col index.
-matrix_element(Board, RowIndex, ColIndex, Element) :-
-    nth0(RowIndex, Board, Row),       % Retrieve the specified row from the board
-    nth0(ColIndex, Row, Element).     % Retrieve the specified element from the row
-    replace_nth(T, NI, Elem, R).
+user_move(Board, Player, UpdatedBoard, NextPlayer) :-
+    ask_coordinates(StartX, StartY, EndX, EndY),
+    (
+      perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer) 
+    -> true  % If the move is successful, proceed
+    ; write('Invalid move, please try again.'), nl,  % If the move fails, ask again
+      user_move(Board, Player, UpdatedBoard, NextPlayer)
+    ).
 
-% Get an element from the matrix at the given Row and Col index.
-matrix_element(Board, RowIndex, ColIndex, Element) :-
-    nth0(RowIndex, Board, Row),       % Retrieve the specified row from the board
-    nth0(ColIndex, Row, Element).     % Retrieve the specified element from the row
+% Check if the path is clear between two points (not including endpoints)
+path_clear(Board, StartX, StartY, EndX, EndY) :-
+    (
+        StartX == EndX -> 
+        DiffY is EndY - StartY,
+        DiffY > 0 -> vertical_clear(Board, StartX, StartY, EndY, 1);  % Moving down
+        vertical_clear(Board, StartX, StartY, EndY, -1)  % Moving up
+    );
+    (
+        StartY == EndY -> 
+        DiffX is EndX - StartX,
+        DiffX > 0 -> horizontal_clear(Board, StartY, StartX, EndX, 1);  % Moving right
+        horizontal_clear(Board, StartY, StartX, EndX, -1)  % Moving left
+    ).
 
+% Check vertical path between two Y coordinates is clear on the given X coordinate
+vertical_clear(_, _, EndY, EndY, _). % Reached end position
+vertical_clear(Board, X, CurrentY, EndY, Step) :-
+    NextY is CurrentY + Step,
+    nth0(NextY, Board, Row),
+    nth0(X, Row, Cell),
+    Cell == empty, % The cell must be empty to be clear
+    vertical_clear(Board, X, NextY, EndY, Step).
 
-
+% Check horizontal path between two X coordinates is clear on the given Y coordinate
+horizontal_clear(_, EndX, _, EndX, _). % Reached end position
+horizontal_clear(Board, Y, CurrentX, EndX, Step) :-
+    NextX is CurrentX + Step,
+    nth0(Y, Board, Row),
+    nth0(NextX, Row, Cell),
+    Cell == empty, % The cell must be empty to be clear
+    horizontal_clear(Board, Y, NextX, EndX, Step).
