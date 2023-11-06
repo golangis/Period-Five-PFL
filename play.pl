@@ -208,6 +208,10 @@ user_move(Board, Player, UpdatedBoard, NextPlayer) :-
       user_move(Board, Player, UpdatedBoard, NextPlayer)
     ).
 
+take_turn(Board, Player, UpdatedBoard, NextPlayer) :-
+    write(Player), write(' player turn.'), nl,
+    user_move(Board, Player, UpdatedBoard, NextPlayer).
+
 % Check if the path is clear between two points (not including endpoints)
 path_clear(Board, StartX, StartY, EndX, EndY) :-
     (
