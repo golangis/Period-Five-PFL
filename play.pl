@@ -120,7 +120,10 @@ player_five_colors(Board, Player) :-
     player_piece_in_purple(Board, Player),
     player_piece_in_blue(Board, Player).
 
-
+/*
+* count_true_conditions(-Count, +Conditions) :-
+* Given an array with conditions counts how many of them are true
+*/
 count_true_conditions(0, []).
 count_true_conditions(Count, [Condition | Rest]) :-
     Condition,
@@ -218,13 +221,19 @@ replace([H|T], I, X, [H|R]) :-
     I1 is I - 1,
     replace(T, I1, X, R).
 
-% To update the value at a specific (X,Y) position in a 2D list
+/*
+* update_board(+Board, +X, +Y, +NewValue, -UpdatedBoard) 
+* Updates the value at a specific coordinate (X,Y) on the game board
+*/
 update_board(Board, X, Y, NewValue, UpdatedBoard) :-
     nth0(Y, Board, Row),                 
     replace(Row, X, NewValue, NewRow),   
     replace(Board, Y, NewRow, UpdatedBoard).
 
-% To move a piece from (StartX,StartY) to (EndX,EndY)
+/*
+* perform_move(+Board, +StartX, +StartY, +EndX, +EndY, -UpdatedBoard, +Player, -NextPlayer, +LastCubeX, +LastCubeY, +CubeX, +CubeY) :-
+* Performs a move and checks if it is valid
+*/
 perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY) :-
     nth0(StartY, Board, StartRow),      
     nth0(StartX, StartRow, Piece),          
@@ -242,19 +251,26 @@ perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer
     update_board(TempBoard, EndX, EndY, Piece, UpdatedBoard), 
     next_player(Player, NextPlayer).
 
-
+/*
+* ask_coordinates(+StartX, +StartY, +EndX, +EndY) 
+* Asks for the coordinates of the piece to move and for the coordinates that the player wants to move the piece to
+*/
 ask_coordinates(StartX, StartY, EndX, EndY) :-
     write('Enter the Column of the piece to move: '), read_number(StartX),
     write('Enter the Row coordinate of the piece to move: '), read_number(StartY),
     write('Enter the Column coordinate of where to move the piece: '), read_number(EndX),
     write('Enter the Row coordinate of where to move the piece: '), read_number(EndY).
 
+/*
+* user_move(+Board, +Player, -UpdatedBoard, +NextPlayer, +LastCubeX, +LastCubeY, +CubeX, +CubeY)
+*  Treats all of the logic behind moving a piece
+*/
 user_move(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY) :-
     ask_coordinates(StartX, StartY, EndX, EndY),
     (
       perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY) 
-    -> true  % If the move is successful, proceed
-    ; write('Invalid move, please try again.'), nl,  % If the move fails, ask again
+    -> true  
+    ; write('Invalid move, please try again.'), nl, 
       user_move(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY)
     ).
 
@@ -262,7 +278,10 @@ take_turn(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, 
     write('It is the '), write(Player), write(' player turn.'), nl,
     user_move(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY).
 
-% Check if the path is clear between two points (not including endpoints)
+/*
+* path_clear(+Board, +StartX, +StartY, +EndX, +EndY) 
+* Check if the path is clear between two points of the board
+*/
 path_clear(Board, StartX, StartY, EndX, EndY) :-
     (
         StartX = EndX -> 
@@ -277,7 +296,9 @@ path_clear(Board, StartX, StartY, EndX, EndY) :-
         horizontal_clear(Board, StartY, StartX, EndX, -1)  % Moving left
     ).
 
-% Check vertical path between two Y coordinates is clear on the given X coordinate
+/*
+* Check if the path is clear between two points of the board (vertically)
+*/
 vertical_clear(_, _, EndY, EndY, _). % Reached end position
 vertical_clear(Board, X, CurrentY, EndY, Step) :-
     NextY is CurrentY + Step,
@@ -286,7 +307,9 @@ vertical_clear(Board, X, CurrentY, EndY, Step) :-
     Cell = empty, % The cell must be empty to be clear
     vertical_clear(Board, X, NextY, EndY, Step).
 
-% Check horizontal path between two X coordinates is clear on the given Y coordinate
+/*
+* Check if the path is clear between two points of the board (horizontally)
+*/
 horizontal_clear(_, _, EndX, EndX, _). % Reached end position
 horizontal_clear(Board, Y, CurrentX, EndX, Step) :-
     NextX is CurrentX + Step,
