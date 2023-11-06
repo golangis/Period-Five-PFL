@@ -131,8 +131,8 @@ count_true_conditions(Count, [Condition | Rest]) :-
 
 
 /*
-*
-*
+* rival_next_to_win(+Board, +Player)
+* Checks if rival is close to win.
 */
 rival_next_to_win(Board, Player) :-
     ConditionsColors = [
@@ -155,22 +155,34 @@ rival_next_to_win(Board, Player) :-
     CountColumns = 4.
 
 /*
-*
-* 
+* cube_cant_move(+Board, +Player)
+* Checks if cube can't move based on the rival closeness to win (other constraints are added directly to the validate_move procedure)
 */
 cube_cant_move(Board, Player) :- 
     next_player(Player, NextPlayer),
     rival_next_to_win(Board, NextPlayer).
 
+/*
+* valid_moves(+Board, +Player, -Moves, +LastCubeX, +LastCubeY, +CubeX, +CubeY) 
+* Gets all valid moves for a player on a specific place
+*/
 valid_moves(Board, Player, Moves, LastCubeX, LastCubeY, CubeX, CubeY) :-
     setof(StartX-StartY-EndX-EndY, Board^Player^UpdatedBoard^NextPlayer^LastCubeX^LastCubeY^CubeX^CubeY^(perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY)), Moves).
 
+/*
+* game_over(+Board, -Winner)
+* Verifies if someone already won the game
+*/
 game_over(Board, light) :- 
     (player_won(Board, light), congratulate(light)).
 
 game_over(Board, dark) :- 
     (player_won(Board, dark), congratulate(dark)).
 
+/*
+* congratulate(+Winner)
+* Sends a message congratulating the winner 
+*/
 congratulate(dark) :-
     nl, nl, write('Game over!'), nl, write('Dark won! Good luck next time, Light!'), nl,
     write('Type "e" to exit.'), nl,
@@ -181,7 +193,10 @@ congratulate(light) :-
     write('Type "e" to exit the intructions menu.'), nl,
     wait_for_e_to_exit.
 
-
+/*
+* game_cycle(+Board, +Player, +LastCubeX, +LastCubeY)
+* Contains all the game's logic: starts the game, changes the player, calls procedures to ask for moves and to perform the moves and breaks the cycle once the game is over
+*/
 game_cycle(Board, Player, LastCubeX, LastCubeY) :-
     game_over(Board, Winner), !.
 
@@ -279,3 +294,15 @@ horizontal_clear(Board, Y, CurrentX, EndX, Step) :-
     nth0(NextX, Row, Cell),
     Cell = empty, % The cell must be empty to be clear
     horizontal_clear(Board, Y, NextX, EndX, Step).
+
+
+
+%      ----------------- BOTS --------------------          %
+
+choose_move(1, _GameState, Moves, Move):-
+    random_select(Move, Moves, _Rest).
+
+choose_move(2, GameState, Moves, Move):-
+    setof(Value-Mv, NewState^( member(Mv, Moves),
+    move(GameState, Mv, NewState),
+    evaluate_board(NewState, Value) ), [_V-Move|_]).
