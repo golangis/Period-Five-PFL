@@ -14,7 +14,7 @@ player_won(Board, Player) :-
 * Counts the number of times a given Value appears on a specified ColumnIndex on a given Array.
 */
 count_in_column(Array, ColumnIndex, Value, Count) :-
-    findall(Cell, (nth1(RowIndex, Array, Row), nth1(ColumnIndex, Row, Cell), Cell = Value), Cells),
+    findall(Cell, (nth1(RowIndex, Array, Row), nth1(ColumnIndex, Row, Cell), (Cell = Value; Cell = cube)), Cells),
     length(Cells, Count).
 /*
 * player_five_columns(+Board, +Player) 
@@ -36,7 +36,12 @@ player_piece_in_black(Board, Player) :-
     nth1(2, Board, Row2), nth1(2, Row2, Player) ;  
     nth1(3, Board, Row3), nth1(3, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(4, Row4, Player) ;  
-    nth1(5, Board, Row5), nth1(5, Row5, Player). 
+    nth1(5, Board, Row5), nth1(5, Row5, Player) ;
+    nth1(1, Board, Row1), nth1(1, Row1, cube) ;
+    nth1(2, Board, Row2), nth1(2, Row2, cube) ;  
+    nth1(3, Board, Row3), nth1(3, Row3, cube) ; 
+    nth1(4, Board, Row4), nth1(4, Row4, cube) ;  
+    nth1(5, Board, Row5), nth1(5, Row5, cube). 
 
 /*
 * player_piece_in_red(+Board, + Player)
@@ -47,7 +52,12 @@ player_piece_in_red(Board, Player) :-
     nth1(2, Board, Row2), nth1(3, Row2, Player) ;  
     nth1(3, Board, Row3), nth1(4, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(5, Row4, Player) ;  
-    nth1(5, Board, Row5), nth1(1, Row5, Player). 
+    nth1(5, Board, Row5), nth1(1, Row5, Player);
+    nth1(1, Board, Row1), nth1(2, Row1, cube) ;
+    nth1(2, Board, Row2), nth1(3, Row2, cube) ;  
+    nth1(3, Board, Row3), nth1(4, Row3, cube) ; 
+    nth1(4, Board, Row4), nth1(5, Row4, cube) ;  
+    nth1(5, Board, Row5), nth1(1, Row5, cube).
 
 /*
 * player_piece_in_yellow(+Board, + Player)
@@ -58,7 +68,13 @@ player_piece_in_yellow(Board, Player) :-
     nth1(2, Board, Row2), nth1(4, Row2, Player) ;  
     nth1(3, Board, Row3), nth1(5, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(1, Row4, Player) ;  
-    nth1(5, Board, Row5), nth1(2, Row5, Player). 
+    nth1(5, Board, Row5), nth1(2, Row5, Player) ;
+    nth1(1, Board, Row1), nth1(3, Row1, cube) ;
+    nth1(2, Board, Row2), nth1(4, Row2, cube) ;  
+    nth1(3, Board, Row3), nth1(5, Row3, cube) ; 
+    nth1(4, Board, Row4), nth1(1, Row4, cube) ;  
+    nth1(5, Board, Row5), nth1(2, Row5, cube) .
+
 
 /*
 * player_piece_in_purple(+Board, + Player)
@@ -69,7 +85,12 @@ player_piece_in_purple(Board, Player) :-
     nth1(2, Board, Row2), nth1(5, Row2, Player) ;  
     nth1(3, Board, Row3), nth1(1, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(2, Row4, Player) ;  
-    nth1(5, Board, Row5), nth1(3, Row5, Player). 
+    nth1(5, Board, Row5), nth1(3, Row5, Player) ;
+    nth1(1, Board, Row1), nth1(4, Row1, cube) ;
+    nth1(2, Board, Row2), nth1(5, Row2, cube) ;  
+    nth1(3, Board, Row3), nth1(1, Row3, cube) ; 
+    nth1(4, Board, Row4), nth1(2, Row4, cube) ;  
+    nth1(5, Board, Row5), nth1(3, Row5, cube). 
 
 /*
 * player_piece_in_blue(+Board, + Player)
@@ -80,7 +101,12 @@ player_piece_in_blue(Board, Player) :-
     nth1(2, Board, Row2), nth1(1, Row2, Player) ;  
     nth1(3, Board, Row3), nth1(2, Row3, Player) ; 
     nth1(4, Board, Row4), nth1(3, Row4, Player) ;  
-    nth1(5, Board, Row5), nth1(4, Row5, Player). 
+    nth1(5, Board, Row5), nth1(4, Row5, Player) ;
+    nth1(1, Board, Row1), nth1(5, Row1, cube) ;
+    nth1(2, Board, Row2), nth1(1, Row2, cube) ;  
+    nth1(3, Board, Row3), nth1(2, Row3, cube) ; 
+    nth1(4, Board, Row4), nth1(3, Row4, cube) ;  
+    nth1(5, Board, Row5), nth1(4, Row5, cube). 
     
 
 /*
@@ -104,7 +130,10 @@ count_true_conditions(Count, [Condition | Rest]) :-
     count_true_conditions(Count, Rest).
 
 
-
+/*
+*
+*
+*/
 rival_next_to_win(Board, Player) :-
     ConditionsColors = [
         player_piece_in_black(Board, Player),
@@ -130,18 +159,21 @@ rival_next_to_win(Board, Player) :-
 * 
 */
 cube_cant_move(Board, Player) :- 
-    rival_next_to_win(Board, Player).
-    %last_position()  .<- checar se posiçao igual à posiçao em que esteve na jogada anterior
+    next_player(Player, NextPlayer),
+    rival_next_to_win(Board, NextPlayer).
 
-%valid_moves(Board, Player, ListOfMoves) :-.
+valid_moves(Board, Player, Moves, LastCubeX, LastCubeY, CubeX, CubeY) :-
+    setof(StartX-StartY-EndX-EndY, Board^Player^UpdatedBoard^NextPlayer^LastCubeX^LastCubeY^CubeX^CubeY^(perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY)), Moves).
 
-game_over(Board, Winner) :- 
-    (player_won(Board, light), congratulate(light)), Winner is light; 
-    (player_won(Board, dark), congratulate(dark)), Winner is dark.
+game_over(Board, light) :- 
+    (player_won(Board, light), congratulate(light)).
+
+game_over(Board, dark) :- 
+    (player_won(Board, dark), congratulate(dark)).
 
 congratulate(dark) :-
     nl, nl, write('Game over!'), nl, write('Dark won! Good luck next time, Light!'), nl,
-    write('Type "e" to exit the intructions menu.'), nl,
+    write('Type "e" to exit.'), nl,
     wait_for_e_to_exit.
 
 congratulate(light) :-
@@ -150,15 +182,14 @@ congratulate(light) :-
     wait_for_e_to_exit.
 
 
-game_cycle(Board, Player) :-
+game_cycle(Board, Player, LastCubeX, LastCubeY) :-
     game_over(Board, Winner), !.
 
-game_cycle(Board, Player) :-
-    %choose_move(Board, Player, Move),
-    take_turn(Board, Player, NewBoard, NextPlayer),
+game_cycle(Board, Player, LastCubeX, LastCubeY) :-
+    take_turn(Board, Player, NewBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY),
     write(NextPlayer),
     display_game(NewBoard),
-    game_cycle(NewBoard, NextPlayer).
+    game_cycle(NewBoard, NextPlayer, CubeX, CubeY).
 
 
 
@@ -174,55 +205,59 @@ replace([H|T], I, X, [H|R]) :-
 
 % To update the value at a specific (X,Y) position in a 2D list
 update_board(Board, X, Y, NewValue, UpdatedBoard) :-
-    nth0(Y, Board, Row),                 % Extract the specified row
-    replace(Row, X, NewValue, NewRow),   % Use replace to set the NewValue
+    nth0(Y, Board, Row),                 
+    replace(Row, X, NewValue, NewRow),   
     replace(Board, Y, NewRow, UpdatedBoard).
 
 % To move a piece from (StartX,StartY) to (EndX,EndY)
-perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer) :-
-    nth0(StartY, Board, StartRow),                 % Get the start row
-    nth0(StartX, StartRow, Piece),                 % Get the piece to move
-    Piece \= empty,                                % Make sure the start is not empty
-    (Piece = Player; Piece = cube),                % Make sure the piece belongs to the current player or is a cube
-    nth0(EndY, Board, EndRow),                     % Get the end row
-    nth0(EndX, EndRow, Destination),               % Check the destination cell
-    Destination = empty,                           % Make sure the destination is empty
-    (StartX == EndX; StartY == EndY), 
-    path_clear(Board, StartX, StartY, EndX, EndY), % Check the path is clear
-    update_board(Board, StartX, StartY, empty, TempBoard),  % Remove the piece
-    update_board(TempBoard, EndX, EndY, Piece, UpdatedBoard),  % Place the piece
-    next_player(Player, NextPlayer).               % Get the next player
+perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY) :-
+    nth0(StartY, Board, StartRow),      
+    nth0(StartX, StartRow, Piece),          
+    Piece \= empty, 
+    (
+        Piece = Player, CubeX = LastCubeX, CubeY = LastCubeY; 
+        (Piece = cube, \+cube_cant_move(Board, Player), (LastCubeX \= EndX; LastCubeY \= EndY), CubeX = StartX, CubeY = StartY)
+    ),    
+    nth0(EndY, Board, EndRow),          
+    nth0(EndX, EndRow, Destination),    
+    Destination = empty,
+    (StartX = EndX; StartY = EndY), 
+    path_clear(Board, StartX, StartY, EndX, EndY), 
+    update_board(Board, StartX, StartY, empty, TempBoard),
+    update_board(TempBoard, EndX, EndY, Piece, UpdatedBoard), 
+    next_player(Player, NextPlayer).
+
 
 ask_coordinates(StartX, StartY, EndX, EndY) :-
-    write('Enter the Column of the piece to move: '), read(StartX),
-    write('Enter the Row coordinate of the piece to move: '), read(StartY),
-    write('Enter the Column coordinate of where to move the piece: '), read(EndX),
-    write('Enter the Row coordinate of where to move the piece: '), read(EndY).
+    write('Enter the Column of the piece to move: '), read_number(StartX),
+    write('Enter the Row coordinate of the piece to move: '), read_number(StartY),
+    write('Enter the Column coordinate of where to move the piece: '), read_number(EndX),
+    write('Enter the Row coordinate of where to move the piece: '), read_number(EndY).
 
-user_move(Board, Player, UpdatedBoard, NextPlayer) :-
+user_move(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY) :-
     ask_coordinates(StartX, StartY, EndX, EndY),
     (
-      perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer) 
+      perform_move(Board, StartX, StartY, EndX, EndY, UpdatedBoard, Player, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY) 
     -> true  % If the move is successful, proceed
     ; write('Invalid move, please try again.'), nl,  % If the move fails, ask again
-      user_move(Board, Player, UpdatedBoard, NextPlayer)
+      user_move(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY)
     ).
 
-take_turn(Board, Player, UpdatedBoard, NextPlayer) :-
-    write(Player), write(' player turn.'), nl,
-    user_move(Board, Player, UpdatedBoard, NextPlayer).
+take_turn(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY) :-
+    write('It is the '), write(Player), write(' player turn.'), nl,
+    user_move(Board, Player, UpdatedBoard, NextPlayer, LastCubeX, LastCubeY, CubeX, CubeY).
 
 % Check if the path is clear between two points (not including endpoints)
 path_clear(Board, StartX, StartY, EndX, EndY) :-
     (
-        StartX == EndX -> 
-        DiffY is EndY - StartY,
+        StartX = EndX -> 
+        DiffY is (EndY - StartY),
         DiffY > 0 -> vertical_clear(Board, StartX, StartY, EndY, 1);  % Moving down
         vertical_clear(Board, StartX, StartY, EndY, -1)  % Moving up
     );
     (
-        StartY == EndY -> 
-        DiffX is EndX - StartX,
+        StartY = EndY -> 
+        DiffX is (EndX - StartX),
         DiffX > 0 -> horizontal_clear(Board, StartY, StartX, EndX, 1);  % Moving right
         horizontal_clear(Board, StartY, StartX, EndX, -1)  % Moving left
     ).
@@ -233,14 +268,14 @@ vertical_clear(Board, X, CurrentY, EndY, Step) :-
     NextY is CurrentY + Step,
     nth0(NextY, Board, Row),
     nth0(X, Row, Cell),
-    Cell == empty, % The cell must be empty to be clear
+    Cell = empty, % The cell must be empty to be clear
     vertical_clear(Board, X, NextY, EndY, Step).
 
 % Check horizontal path between two X coordinates is clear on the given Y coordinate
-horizontal_clear(_, EndX, _, EndX, _). % Reached end position
+horizontal_clear(_, _, EndX, EndX, _). % Reached end position
 horizontal_clear(Board, Y, CurrentX, EndX, Step) :-
     NextX is CurrentX + Step,
     nth0(Y, Board, Row),
     nth0(NextX, Row, Cell),
-    Cell == empty, % The cell must be empty to be clear
+    Cell = empty, % The cell must be empty to be clear
     horizontal_clear(Board, Y, NextX, EndX, Step).

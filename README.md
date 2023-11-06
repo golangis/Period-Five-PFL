@@ -106,3 +106,4 @@ issues), as well as possible improvements (roadmap) (up to 250 words);
 - https://www.iggamecenter.com/en/rules/period5 
 - Chat GPT
 - StackOverflow
+- https://github.com/ttoino/feup-pfl-proj2 (procedure read_numbers)
