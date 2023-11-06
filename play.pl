@@ -193,7 +193,7 @@ congratulate(dark) :-
 
 congratulate(light) :-
     nl, nl, write('Game over!'), nl, write('Light won! Good luck next time, Dark!'), nl,
-    write('Type "e" to exit the intructions menu.'), nl,
+    write('Type "e" to exit.'), nl,
     wait_for_e_to_exit.
 
 /*
@@ -322,10 +322,11 @@ horizontal_clear(Board, Y, CurrentX, EndX, Step) :-
 
 %      ----------------- BOTS --------------------          %
 
-choose_move(1, _GameState, Moves, Move):-
+
+choose_move(1, Board, Moves, Move):-
     random_select(Move, Moves, _Rest).
 
-choose_move(2, GameState, Moves, Move):-
-    setof(Value-Mv, NewState^( member(Mv, Moves),
-    move(GameState, Mv, NewState),
-    evaluate_board(NewState, Value) ), [_V-Move|_]).
+% choose_move(2, GameState, Moves, Move):-
+%     setof(Value-Mv, NewState^( member(Mv, Moves),
+%     move(GameState, Mv, NewState),
+%     evaluate_board(NewState, Value) ), [_V-Move|_]).
